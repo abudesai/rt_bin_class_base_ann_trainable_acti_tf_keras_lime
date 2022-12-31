@@ -2,7 +2,7 @@ import numpy as np, pandas as pd
 import json
 import os, sys
 import time
-from interpret.blackbox import LimeTabular
+from lime import lime_tabular
 
 import algorithm.utils as utils
 import algorithm.preprocessing.pipeline as pipeline
@@ -55,11 +55,8 @@ class ModelServer:
     def predict_proba(self, data):
 
         preds = self._get_predictions(data)
-        # get class names (labels)
         class_names = pipeline.get_class_names(self.preprocessor, model_cfg)
-        # get the name for the id field
 
-        # return te prediction df with the id and class probability fields
         preds_df = data[[self.id_field_name]].copy()
         preds_df[class_names[0]] = 1 - preds
         preds_df[class_names[-1]] = preds
@@ -76,14 +73,7 @@ class ModelServer:
         # return te prediction df with the id and prediction fields
         preds_df = data[[self.id_field_name]].copy()
         preds_df["prediction"] = pred_classes
-
         return preds_df
-
-    def _get_preds_array(self, X):
-        model = self._get_model()
-        preds = model.predict(X)
-        preds_arr = np.concatenate([1 - preds, preds], axis=1)
-        return preds_arr
 
     def predict_to_json(self, data):
         preds_df = self.predict_proba(data)
@@ -105,6 +95,12 @@ class ModelServer:
             predictions_response.append(pred_obj)
         return predictions_response
 
+    def _predict_proba(self, X):
+        model = self._get_model()
+        preds = model.predict(X)
+        preds_arr = np.concatenate([1 - preds, preds], axis=1)
+        return preds_arr
+
     def explain_local(self, data):
 
         if data.shape[0] > self.MAX_LOCAL_EXPLANATIONS:
@@ -119,53 +115,59 @@ class ModelServer:
         data2 = data.head(self.MAX_LOCAL_EXPLANATIONS)
         # transform data - returns a dict of X (transformed input features) and Y(targets, if any, else None)
         proc_data = preprocessor.transform(data2)
-        pred_X = proc_data["X"].astype(np.float)
+        pred_X, ids = proc_data["X"].astype(np.float), proc_data["ids"]
 
         class_names = pipeline.get_class_names(self.preprocessor, model_cfg)
         feature_names = list(pred_X.columns)
 
         print(f"Generating local explanations for {pred_X.shape[0]} sample(s).")
-        lime = LimeTabular(
-            predict_fn=self._get_preds_array,
-            data=pd.DataFrame(model.train_X, columns=feature_names),
+        explainer = lime_tabular.LimeTabularExplainer(
+            model.train_X,
+            mode="classification",
             class_names=class_names,
-            random_state=1,
+            feature_names=feature_names,
         )
 
-        # Get local explanations
-        # start = time.time()
-        lime_local = lime.explain_local(
-            X=pred_X, y=None, name=f"{classifier.MODEL_NAME} local explanations"
-        )
-
-        # create the dataframe of local explanations to return
-        ids = list(data2[self.id_field_name])
+        model = self._get_model()
         explanations = []
+        for i, row in pred_X.iterrows():
 
-        for i, sample_exp in enumerate(lime_local._internal_obj["specific"]):
-            sample_expl_dict = {}
-            # intercept
-            sample_expl_dict["baseline"] = np.round(sample_exp["extra"]["scores"][0], 5)
-
-            sample_expl_dict["feature_scores"] = {
-                f: np.round(s, 5)
-                for f, s in zip(sample_exp["names"], sample_exp["scores"])
-            }
-            sample_expl_dict[
-                "comment_"
-            ] = f"Explanations are w.r.t. class '{class_names[1]}'"
-
-            class_prob = np.round(sample_exp["perf"]["predicted_score"], 5)
+            explanation = explainer.explain_instance(
+                row, model.predict_proba, top_labels=len(class_names)
+            )
+            pred_class = class_names[int(explanation.predict_proba.argmax())]
+            class_prob = explanation.predict_proba.max()
+            other_class = (
+                class_names[0] if class_names[1] == pred_class else class_names[1]
+            )
             probabilities = {
-                class_names[0]: np.round(1 - class_prob, 5),
-                class_names[1]: np.round(class_prob, 5),
+                other_class: np.round(1 - class_prob, 5),
+                pred_class: np.round(class_prob, 5),
             }
+
+            sample_expl_dict = {}
+            sample_expl_dict["explanations_per_class"] = {}
+            for j, c in enumerate(class_names):
+                class_exp_dict = {}
+                class_exp_dict["class_prob"] = round(
+                    float(explanation.predict_proba[j]), 5
+                )
+                class_exp_dict["intercept"] = np.round(explanation.intercept[j], 5)
+                feature_impacts = {}
+                for feature_idx, feature_impact in explanation.local_exp[j]:
+                    feature_impacts[feature_names[feature_idx]] = np.round(
+                        feature_impact, 5
+                    )
+
+                class_exp_dict["feature_impacts"] = feature_impacts
+                sample_expl_dict["explanations_per_class"][str(c)] = class_exp_dict
+
             explanations.append(
                 {
                     self.id_field_name: ids[i],
-                    "label": class_names[0] if class_prob < 0.5 else class_names[1],
+                    "label": pred_class,
                     "probabilities": probabilities,
-                    "explanations": sample_expl_dict,
+                    "explanations": sample_expl_dict["explanations_per_class"],
                 }
             )
         explanations = {"predictions": explanations}

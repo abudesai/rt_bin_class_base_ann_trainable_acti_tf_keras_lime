@@ -211,6 +211,11 @@ class Classifier:
         preds = self.model.predict(X, verbose=verbose)
         return preds
 
+    def predict_proba(self, X, verbose=False):
+        preds = self.model.predict(X)
+        probabilities = np.concatenate([1 - preds, preds], axis=1)
+        return probabilities
+
     def summary(self):
         self.model.summary()
 
