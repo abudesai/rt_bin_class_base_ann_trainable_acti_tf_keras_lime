@@ -1,0 +1,43 @@
+{
+  "problemCategory": "classification_binary_base",
+  "version": "1.0",
+  "inputDatasets": {
+    "binaryClassificationBaseMainInput": {
+      "idField": "id",
+      "targetField": "diagnosis",
+      "targetClass": "M",
+      "predictorFields": [
+        { "fieldName": "radius_mean", "dataType": "NUMERIC" },
+        { "fieldName": "texture_mean", "dataType": "NUMERIC" },
+        { "fieldName": "perimeter_mean", "dataType": "NUMERIC" },
+        { "fieldName": "area_mean", "dataType": "NUMERIC" },
+        { "fieldName": "smoothness_mean", "dataType": "NUMERIC" },
+        { "fieldName": "compactness_mean", "dataType": "NUMERIC" },
+        { "fieldName": "concavity_mean", "dataType": "NUMERIC" },
+        { "fieldName": "concave points_mean", "dataType": "NUMERIC" },
+        { "fieldName": "symmetry_mean", "dataType": "NUMERIC" },
+        { "fieldName": "fractal_dimension_mean", "dataType": "NUMERIC" },
+        { "fieldName": "radius_se", "dataType": "NUMERIC" },
+        { "fieldName": "texture_se", "dataType": "NUMERIC" },
+        { "fieldName": "perimeter_se", "dataType": "NUMERIC" },
+        { "fieldName": "area_se", "dataType": "NUMERIC" },
+        { "fieldName": "smoothness_se", "dataType": "NUMERIC" },
+        { "fieldName": "compactness_se", "dataType": "NUMERIC" },
+        { "fieldName": "concavity_se", "dataType": "NUMERIC" },
+        { "fieldName": "concave points_se", "dataType": "NUMERIC" },
+        { "fieldName": "symmetry_se", "dataType": "NUMERIC" },
+        { "fieldName": "fractal_dimension_se", "dataType": "NUMERIC" },
+        { "fieldName": "radius_worst", "dataType": "NUMERIC" },
+        { "fieldName": "texture_worst", "dataType": "NUMERIC" },
+        { "fieldName": "perimeter_worst", "dataType": "NUMERIC" },
+        { "fieldName": "area_worst", "dataType": "NUMERIC" },
+        { "fieldName": "smoothness_worst", "dataType": "NUMERIC" },
+        { "fieldName": "compactness_worst", "dataType": "NUMERIC" },
+        { "fieldName": "concavity_worst", "dataType": "NUMERIC" },
+        { "fieldName": "concave points_worst", "dataType": "NUMERIC" },
+        { "fieldName": "symmetry_worst", "dataType": "NUMERIC" },
+        { "fieldName": "fractal_dimension_worst", "dataType": "NUMERIC" }
+      ]
+    }
+  }
+}

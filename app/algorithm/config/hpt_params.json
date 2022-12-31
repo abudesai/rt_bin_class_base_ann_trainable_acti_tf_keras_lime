@@ -1,0 +1,42 @@
+[
+  {
+    "name": "l1_reg",
+    "short_desc": "L1 regularization penalty.",
+    "default": 1e-3,
+    "type": "real",
+    "range_low": 1e-7,
+    "range_high": 1e-1,
+    "search_type": "log-uniform",
+    "run_HPO": true
+  },
+  {
+    "name": "l2_reg",
+    "short_desc": "L2 regularization penalty.",
+    "default": 1e-1,
+    "type": "real",
+    "range_low": 1e-7,
+    "range_high": 1e-1,
+    "search_type": "log-uniform",
+    "run_HPO": true
+  },
+  {
+    "name": "lr",
+    "short_desc": "Learning rate for optimizer.",
+    "default": 1e-3,
+    "type": "real",
+    "range_low": 1e-5,
+    "range_high": 1e-1,
+    "search_type": "log-uniform",
+    "run_HPO": true
+  },
+  {
+    "name": "num_cps",
+    "short_desc": "Number of changepoints for the trainable activation layer.",
+    "default": 2,
+    "type": "int",
+    "range_low": 1,
+    "range_high": 4,
+    "search_type": "uniform",
+    "run_HPO": true
+  }
+]

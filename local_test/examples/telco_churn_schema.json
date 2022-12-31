@@ -1,0 +1,32 @@
+{
+  "problemCategory": "classification_binary_base",
+  "version": "1.0",
+  "inputDatasets": {
+    "binaryClassificationBaseMainInput": {
+      "idField": "customerID",
+      "targetField": "Churn",
+      "targetClass": "Yes",
+      "predictorFields": [
+        { "fieldName": "gender", "dataType": "CATEGORICAL" },
+        { "fieldName": "SeniorCitizen", "dataType": "CATEGORICAL" },
+        { "fieldName": "Partner", "dataType": "CATEGORICAL" },
+        { "fieldName": "Dependents", "dataType": "CATEGORICAL" },
+        { "fieldName": "tenure", "dataType": "NUMERIC" },
+        { "fieldName": "PhoneService", "dataType": "CATEGORICAL" },
+        { "fieldName": "MultipleLines", "dataType": "CATEGORICAL" },
+        { "fieldName": "InternetService", "dataType": "CATEGORICAL" },
+        { "fieldName": "OnlineSecurity", "dataType": "CATEGORICAL" },
+        { "fieldName": "OnlineBackup", "dataType": "CATEGORICAL" },
+        { "fieldName": "DeviceProtection", "dataType": "CATEGORICAL" },
+        { "fieldName": "TechSupport", "dataType": "CATEGORICAL" },
+        { "fieldName": "StreamingTV", "dataType": "CATEGORICAL" },
+        { "fieldName": "StreamingMovies", "dataType": "CATEGORICAL" },
+        { "fieldName": "Contract", "dataType": "CATEGORICAL" },
+        { "fieldName": "PaperlessBilling", "dataType": "CATEGORICAL" },
+        { "fieldName": "PaymentMethod", "dataType": "CATEGORICAL" },
+        { "fieldName": "MonthlyCharges", "dataType": "NUMERIC" },
+        { "fieldName": "TotalCharges", "dataType": "NUMERIC" }
+      ]
+    }
+  }
+}
