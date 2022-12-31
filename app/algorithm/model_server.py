@@ -155,7 +155,7 @@ class ModelServer:
                 "comment_"
             ] = f"Explanations are w.r.t. class '{class_names[1]}'"
 
-            class_prob = np.round(sample_exp["perf"]["predicted"], 5)
+            class_prob = np.round(sample_exp["perf"]["predicted_score"], 5)
             probabilities = {
                 class_names[0]: np.round(1 - class_prob, 5),
                 class_names[1]: np.round(class_prob, 5),
